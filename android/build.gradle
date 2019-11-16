@@ -7,6 +7,8 @@ buildscript {
         minSdkVersion = 16
         compileSdkVersion = 28
         targetSdkVersion = 28
+        playServicesVersion = "16.1.0" // or set latest version
+        androidMapsUtilsVersion = "16.1.0"
     }
     repositories {
         google()
