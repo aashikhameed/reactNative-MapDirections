@@ -55,8 +55,8 @@ componentDidMount() {
           (error)    => { console.log(error) },
           {
             enableHighAccuracy: true,
-            timeout:            20000,
-            maximumAge:         10000
+            timeout: 20000,
+            maximumAge: 10000
           }
         )
         this.watchID = Geolocation.watchPosition((position) => {
@@ -67,7 +67,13 @@ componentDidMount() {
             latitudeDelta:  0.00922*1.5,
             longitudeDelta: 0.00421*1.5
           }
-          console.log(region)
+          console.log(region);
+          this.setState({initialGeoPosition : {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA,
+            }});
           // this.onRegionChange(region, region.latitude, region.longitude);
         }, (error)=>console.log(error));
       }
