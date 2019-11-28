@@ -20,17 +20,8 @@ class App extends Component {
 
     // AirBnB's Office, and Apple Park
     this.state = {
-      initialGeoPosition : undefined,
-      coordinates: [
-        {
-          latitude: 80.24855118244886,
-          longitude: 13.078513890250663,
-        },
-        {
-          latitude: 80.27353830635549,
-          longitude: 13.081174844551144,
-        },
-      ],
+      initialGeoPosition : false,
+      coordinates: [],
     };
   }
 
@@ -45,12 +36,15 @@ componentDidMount() {
       if (result == 'granted') {
         Geolocation.getCurrentPosition(
           (position) => { 
-            this.setState({initialGeoPosition : {
+            let updateCoords = this.state.coordinates;
+            if (updateCoords.length >=0 ) {
+            updateCoords.length >= 2 && updateCoords.pop()
+            updateCoords.push({
               latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: LATITUDE_DELTA,
-              longitudeDelta: LONGITUDE_DELTA,
-            }});
+              longitude: position.coords.longitude})
+            this.setState({coordinates : updateCoords, })
+            }
+            this.setState({ initialGeoPosition: true});
            },
           (error)    => { console.log(error) },
           {
@@ -61,19 +55,15 @@ componentDidMount() {
         )
         this.watchID = Geolocation.watchPosition((position) => {
           // Create the object to update this.state.mapRegion through the onRegionChange function
-          let region = {
-            latitude:       position.coords.latitude,
-            longitude:      position.coords.longitude,
-            latitudeDelta:  0.00922*1.5,
-            longitudeDelta: 0.00421*1.5
+         
+          let updateCoords = this.state.coordinates;
+          if (updateCoords.length >=0 || updateCoords.length <= 2 ) {
+            updateCoords.length >= 2 && updateCoords.pop()
+          updateCoords.push({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude})
+          this.setState({coordinates : updateCoords, })
           }
-          console.log(region);
-          this.setState({initialGeoPosition : {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: LATITUDE_DELTA,
-              longitudeDelta: LONGITUDE_DELTA,
-            }});
           // this.onRegionChange(region, region.latitude, region.longitude);
         }, (error)=>console.log(error));
       }
@@ -101,8 +91,7 @@ componentWillUnmount() {
       initialGeoPosition ? 
       <MapComponent
       onMapPressed={(e)=> console.log(e.nativeEvent.coordinate)}
-      initialGeoPosition={initialGeoPosition}
-      startEndCoords={coordinates}
+      coordinates={this.state.coordinates}
        /> : <View style={{flex: 1, justifyContent: "center"}}><Text style={{textAlign: "center"}}>Getting your location.. this may take a while</Text></View>
     );
   }
